@@ -29,7 +29,26 @@
     @media (max-width:900px){.two-col{grid-template-columns:1fr}} @media (max-width:640px){.app-shell{padding:14px}.brand-logo{width:180px}}
   </style>
 </head>
-<body>
+<body><script>
+  const adminLoginBtn = document.getElementById("adminLoginBtn");
+  const adminEmailInput = document.getElementById("adminEmail");
+  const adminPasswordInput = document.getElementById("adminPassword");
+
+  adminLoginBtn.addEventListener("click", () => {
+    const email = adminEmailInput.value;
+    const password = adminPasswordInput.value;
+
+    console.log("Email:", email);
+    console.log("Password:", password);
+
+    if (!skytechspro@gmail.com || !Jesus2@3@!) {
+
+      return;
+    }
+
+    // Aquí va tu login de Firebase
+  });
+</script>
   <main class="app-shell">
     <section class="card">
       <div class="body brand-wrap">
