@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Second Mile Companion Services</title>
+  <style>
+    :root{--bg:#f6f4ef;--card:#fff;--text:#1f1f1f;--muted:#6c6a64;--primary:#0f6266;--primary2:#0a4b4e;--border:#ddd8cf;--danger:#8b2d2d}
+    *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
+    main{max-width:1100px;margin:auto;padding:18px}.card{background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:16px;overflow:hidden}
+    .head{padding:18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:12px}.body{padding:18px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}.field{display:flex;flex-direction:column;gap:6px}
+    input,select,textarea{padding:11px;border:1px solid var(--border);border-radius:10px;font:inherit}textarea{min-height:85px}
+    button{border:0;border-radius:10px;padding:11px 15px;font-weight:700;cursor:pointer}.primary{background:var(--primary);color:#fff}.primary:hover{background:var(--primary2)}
+    .secondary{background:#eeece6}.danger{background:var(--danger);color:#fff}.hidden{display:none!important}.muted{color:var(--muted)}
+    .inline{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+    .summary .card{margin:0}.summary strong{font-size:28px;display:block}.list{display:grid;gap:10px}.item{border:1px solid var(--border);border-radius:12px;padding:13px}
+    .client{border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px}.brand{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+    .brand img{width:180px;max-width:100%}.brand h1{margin:0}.brand p{margin:4px 0 0}.status{font-weight:700}.ok{color:#176534}.bad{color:#8b2d2d}
+    @media(max-width:650px){main{padding:10px}.summary{grid-template-columns:1fr}.brand img{width:150px}}
+  </style>
+</head>
+<body>
+<main>
+  <section class="card">
+    <div class="body brand">
+      <img src="./assets.LOGO-SECONDO.png" alt="Second Mile">
+      <div><h1>Second Mile Companion Services</h1><p class="muted">Trusted Support Every Step of the Way</p></div>
+    </div>
+  </section>
+
+  <section id="loginScreen" class="card">
+    <div class="head"><div><h2>Acceso</h2><p class="muted">Administrador y empleados.</p></div></div>
+    <div class="body">
+      <div class="inline">
+        <button id="showEmployee" class="primary">Entrar como empleado</button>
+        <button id="showAdmin" class="secondary">Acceso de administrador</button>
+      </div>
+
+      <div id="adminLogin" class="card hidden" style="margin-top:16px">
+        <div class="body grid">
+          <div class="field"><label>Correo</label><input id="adminEmail" type="email" value="skytechspro@gmail.com"></div>
+          <div class="field"><label>Contraseña</label><input id="adminPassword" type="password"></div>
+          <div class="inline">
+            <button id="adminLoginBtn" class="primary">Ingresar al panel</button>
+            <button id="resetPasswordBtn" class="secondary">Restablecer contraseña</button>
+          </div>
+          <div id="loginStatus" class="status muted"></div>
+        </div>
+      </div>
+
+      <div id="employeeLogin" class="card hidden" style="margin-top:16px">
+        <div class="body grid">
+          <div class="field"><label>Empleado</label><select id="employeeLoginSelect"></select></div>
+          <div class="field"><label>PIN</label><input id="employeePin" type="password" inputmode="numeric"></div>
+          <button id="employeeLoginBtn" class="primary">Entrar</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="adminPanel" class="hidden">
+    <div class="summary">
+      <section class="card"><div class="body"><span class="muted">Clientes asignados</span><strong id="sumClients">0</strong></div></section>
+      <section class="card"><div class="body"><span class="muted">Entradas</span><strong id="sumIn">0</strong></div></section>
+      <section class="card"><div class="body"><span class="muted">Salidas</span><strong id="sumOut">0</strong></div></section>
+    </div>
+
+    <section class="card">
+      <div class="head"><div><h2>Administrador</h2><p class="muted">Configura empleados y clientes.</p></div><button id="logoutAdmin" class="secondary">Salir</button></div>
+      <div class="body grid">
+        <div class="field"><label>Empleado</label><select id="employeeSelect"></select></div>
+        <div class="field"><label>Nombre del empleado</label><input id="employeeName"></div>
+        <div class="field"><label>PIN del empleado</label><input id="employeePinEdit" inputmode="numeric"></div>
+        <button id="saveEmployee" class="secondary">Guardar empleado</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="head"><div><h2>Asignaciones</h2><p class="muted">Hasta 4 clientes por empleado.</p></div></div>
+      <div id="adminClients" class="body"></div>
+      <div class="body inline">
+        <button id="saveAssignments" class="primary">Guardar y sincronizar</button>
+        <button id="exportCsv" class="secondary">Exportar CSV</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="head"><h2>Actividad</h2></div>
+      <div id="historyList" class="body list"></div>
+    </section>
+  </section>
+
+  <section id="employeePanel" class="card hidden">
+    <div class="head"><div><h2 id="employeeTitle">Empleado</h2><p class="muted">Tus clientes asignados.</p></div><button id="logoutEmployee" class="secondary">Salir</button></div>
+    <div id="employeeClients" class="body"></div>
+  </section>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-auth.js";
+import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBnhPJqT10nDNIURMpofXMdQeV-rqhWBQI",
+  authDomain: "asistencia-mile.firebaseapp.com",
+  databaseURL: "https://asistencia-mile-default-rtdb.firebaseio.com",
+  projectId: "asistencia-mile",
+  storageBucket: "asistencia-mile.firebasestorage.app",
+  messagingSenderId: "713941292761",
+  appId: "1:713941292761:web:a414b2fe16bf3b54e3d0c8",
+  measurementId: "G-LH5DRH3CG0"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+const ROOT = "asistencia-mile-app";
+
+const $ = id => document.getElementById(id);
+const defaultEmployees = Array.from({length:20},(_,i)=>({
+  id:i+1,name:`Employee ${i+1}`,pin:String(1001+i),
+  clients:Array.from({length:4},(_,j)=>({
+    slot:j+1,name:"",phone:"",address:"",start:"",end:"",notes:"",
+    checkIn:"",checkOut:""
+  }))
+}));
+let data = {employees:defaultEmployees,history:[]};
+let currentEmployeeId = null;
+let unsubscribe = null;
+
+function esc(v=""){return String(v).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]))}
+function show(which){
+  $("loginScreen").classList.toggle("hidden",which!=="login");
+  $("adminPanel").classList.toggle("hidden",which!=="admin");
+  $("employeePanel").classList.toggle("hidden",which!=="employee");
+}
+function normalize(payload){
+  if(!payload || !Array.isArray(payload.employees)) return;
+  data.employees = payload.employees.map((e,i)=>({
+    id:Number(e.id||i+1),name:e.name||`Employee ${i+1}`,pin:String(e.pin||1001+i),
+    clients:Array.from({length:4},(_,j)=>{
+      const c=(e.clients||[])[j]||{};
+      return {slot:j+1,name:c.name||"",phone:c.phone||"",address:c.address||"",start:c.start||"",end:c.end||"",notes:c.notes||"",checkIn:c.checkIn||"",checkOut:c.checkOut||""};
+    })
+  }));
+  data.history = Array.isArray(payload.history)?payload.history:[];
+}
+async function saveAll(){ await set(ref(db,ROOT),data); }
+async function ensureData(){
+  const snap=await get(ref(db,ROOT));
+  if(snap.exists()) normalize(snap.val()); else await saveAll();
+}
+function bindRealtime(){
+  if(unsubscribe) unsubscribe();
+  unsubscribe=onValue(ref(db,ROOT),snap=>{
+    if(snap.exists()) normalize(snap.val());
+    populateSelectors(); renderAdmin(); if(currentEmployeeId) renderEmployee();
+  });
+}
+function populateSelectors(){
+  const opts=data.employees.map(e=>`<option value="${e.id}">${esc(e.name)}</option>`).join("");
+  $("employeeSelect").innerHTML=opts;
+  $("employeeLoginSelect").innerHTML=opts;
+  loadEmployeeEditor();
+}
+function loadEmployeeEditor(){
+  const e=data.employees.find(x=>x.id===Number($("employeeSelect").value))||data.employees[0];
+  if(!e)return;
+  $("employeeName").value=e.name;
+  $("employeePinEdit").value=e.pin;
+  $("adminClients").innerHTML=e.clients.map(c=>`
+    <div class="client" data-slot="${c.slot}">
+      <h3>Cliente ${c.slot}</h3>
+      <div class="grid">
+        <div class="field"><label>Nombre</label><input data-k="name" value="${esc(c.name)}"></div>
+        <div class="field"><label>Teléfono</label><input data-k="phone" value="${esc(c.phone)}"></div>
+        <div class="field"><label>Dirección</label><input data-k="address" value="${esc(c.address)}"></div>
+        <div class="field"><label>Hora inicio</label><input type="time" data-k="start" value="${esc(c.start)}"></div>
+        <div class="field"><label>Hora fin</label><input type="time" data-k="end" value="${esc(c.end)}"></div>
+        <div class="field"><label>Notas</label><textarea data-k="notes">${esc(c.notes)}</textarea></div>
+      </div>
+    </div>`).join("");
+}
+function renderAdmin(){
+  const clients=data.employees.reduce((n,e)=>n+e.clients.filter(c=>c.name).length,0);
+  const ins=data.employees.reduce((n,e)=>n+e.clients.filter(c=>c.checkIn).length,0);
+  const outs=data.employees.reduce((n,e)=>n+e.clients.filter(c=>c.checkOut).length,0);
+  $("sumClients").textContent=clients;$("sumIn").textContent=ins;$("sumOut").textContent=outs;
+  $("historyList").innerHTML=data.history.length?data.history.slice().reverse().map(h=>`<div class="item"><strong>${esc(h.title)}</strong><div>${esc(h.detail)}</div><small class="muted">${esc(h.at)}</small></div>`).join(""):`<div class="item">Sin actividad todavía.</div>`;
+}
+function renderEmployee(){
+  const e=data.employees.find(x=>x.id===Number(currentEmployeeId)); if(!e)return;
+  $("employeeTitle").textContent=e.name;
+  $("employeeClients").innerHTML=e.clients.map(c=>`
+    <div class="client">
+      <h3>Cliente ${c.slot}: ${esc(c.name||"Sin asignar")}</h3>
+      <p>${esc(c.address||"Sin dirección")}</p>
+      <p>${esc(c.start||"--:--")} a ${esc(c.end||"--:--")}</p>
+      <p>${esc(c.notes||"")}</p>
+      <div class="inline">
+        <button class="primary attendance" data-slot="${c.slot}" data-action="in" ${!c.name?"disabled":""}>Check-In</button>
+        <button class="secondary attendance" data-slot="${c.slot}" data-action="out" ${!c.name?"disabled":""}>Check-Out</button>
+      </div>
+      <p class="muted">Entrada: ${esc(c.checkIn||"--")} · Salida: ${esc(c.checkOut||"--")}</p>
+    </div>`).join("");
+}
+function addHistory(title,detail){data.history.push({title,detail,at:new Date().toLocaleString()});}
+
+$("showAdmin").onclick=()=>{$("adminLogin").classList.remove("hidden");$("employeeLogin").classList.add("hidden")};
+$("showEmployee").onclick=()=>{$("employeeLogin").classList.remove("hidden");$("adminLogin").classList.add("hidden")};
+
+$("adminLoginBtn").onclick=async()=>{
+  const email=$("adminEmail").value.trim(), password=$("adminPassword").value;
+  $("loginStatus").textContent="Conectando...";
+  try{
+    await signInWithEmailAndPassword(auth,email,password);
+    await ensureData(); bindRealtime(); populateSelectors(); renderAdmin(); show("admin");
+    $("loginStatus").textContent="";
+  }catch(e){$("loginStatus").textContent=e.message;$("loginStatus").className="status bad";alert("No se pudo iniciar sesión: "+e.message)}
+};
+
+$("resetPasswordBtn").onclick=async()=>{
+  const email=$("adminEmail").value.trim();
+  try{await sendPasswordResetEmail(auth,email);alert("Correo de restablecimiento enviado.");}
+  catch(e){alert("No se pudo enviar: "+e.message)}
+};
+
+$("logoutAdmin").onclick=async()=>{await signOut(auth);show("login")};
+$("logoutEmployee").onclick=()=>{currentEmployeeId=null;show("login")};
+
+$("employeeLoginBtn").onclick=async()=>{
+  try{
+    await ensureData();
+    const id=Number($("employeeLoginSelect").value),pin=$("employeePin").value.trim();
+    const e=data.employees.find(x=>x.id===id&&x.pin===pin);
+    if(!e){alert("PIN incorrecto.");return}
+    currentEmployeeId=id;bindRealtime();renderEmployee();show("employee");
+  }catch(e){alert("No se pudieron cargar las asignaciones: "+e.message)}
+};
+
+$("employeeSelect").onchange=loadEmployeeEditor;
+
+$("saveEmployee").onclick=async()=>{
+  const e=data.employees.find(x=>x.id===Number($("employeeSelect").value));if(!e)return;
+  e.name=$("employeeName").value.trim()||e.name;e.pin=$("employeePinEdit").value.trim()||e.pin;
+  addHistory("Empleado actualizado",e.name);await saveAll();populateSelectors();renderAdmin();alert("Empleado guardado.");
+};
+
+$("saveAssignments").onclick=async()=>{
+  const e=data.employees.find(x=>x.id===Number($("employeeSelect").value));if(!e)return;
+  document.querySelectorAll("#adminClients .client").forEach(box=>{
+    const c=e.clients.find(x=>x.slot===Number(box.dataset.slot));
+    box.querySelectorAll("[data-k]").forEach(el=>c[el.dataset.k]=el.value.trim());
+  });
+  addHistory("Asignaciones guardadas",e.name);await saveAll();renderAdmin();alert("Asignaciones sincronizadas.");
+};
+
+$("employeeClients").onclick=async ev=>{
+  const b=ev.target.closest(".attendance");if(!b)return;
+  const e=data.employees.find(x=>x.id===Number(currentEmployeeId));
+  const c=e.clients.find(x=>x.slot===Number(b.dataset.slot));if(!c)return;
+  const stamp=new Date().toLocaleString();
+  if(b.dataset.action==="in"){c.checkIn=stamp;addHistory("Check-In",`${e.name} · ${c.name}`)}
+  else{if(!c.checkIn){alert("Primero debe hacer Check-In.");return}c.checkOut=stamp;addHistory("Check-Out",`${e.name} · ${c.name}`)}
+  await saveAll();renderEmployee();
+};
+
+$("exportCsv").onclick=()=>{
+  const rows=[["Empleado","PIN","Cliente","Dirección","Inicio","Fin","Check-In","Check-Out"]];
+  data.employees.forEach(e=>e.clients.forEach(c=>rows.push([e.name,e.pin,c.name,c.address,c.start,c.end,c.checkIn,c.checkOut])));
+  const csv=rows.map(r=>r.map(v=>`"${String(v||"").replaceAll('"','""')}"`).join(",")).join("\n");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="reporte-asistencia.csv";a.click();
+};
+
+onAuthStateChanged(auth,async user=>{
+  if(user){try{await ensureData();bindRealtime();populateSelectors();renderAdmin();}catch(e){console.error(e)}}
+});
+
+populateSelectors();
+</script>
+</body>
+</html>
