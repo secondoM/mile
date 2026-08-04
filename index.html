@@ -46,7 +46,11 @@
       <div class="body">
         <div class="login-choice"><button class="btn btn-primary" id="showEmployeeLogin" type="button">Entrar como empleado</button></div>
         <div class="admin-access-note"><button class="link-button" id="showAdminLogin" type="button">Acceso de administrador</button></div>
-        <div class="card hidden" id="adminLoginCard"><div class="body grid"><div class="field"><label for="adminEmail">Correo administrador</label><input id="adminEmail" type="email" placeholder="correo@ejemplo.com" value="skytechspro@gmail.com"></div><div class="field"><label for="adminPassword">Contraseña Firebase</label><input id="adminPassword" type="password" placeholder="Ingresa la contraseña"></div><button class="btn btn-primary" id="adminLoginBtn" type="button">Ingresar al panel</button><p class="muted">Usa tu cuenta de Firebase para sincronizar cambios entre dispositivos.</p></div></div>
+        <div class="card hidden" id="adminLoginCard"><div class="body grid"><div class="field"><label for="adminEmail">Correo administrador</label><input id="adminEmail" type="email" placeholder="correo@ejemplo.com" value="skytechspro@gmail.com"></div><div class="field"><label for="adminPassword">Contraseña Firebase</label><input id="adminPassword" type="password" placeholder="Ingresa la contraseña"></div><button class="btn btn-primary" id="adminLoginBtn" type="button">Ingresar al panel</button><button class="btn btn-secondary"
+        id="changeAdminPassword"
+        type="button">
+    Cambiar contraseña del administrador
+</button><p class="muted">Usa tu cuenta de Firebase para sincronizar cambios entre dispositivos.</p></div></div>
         <div class="card hidden" id="employeeLoginCard"><div class="body grid"><div class="field"><label for="employeePinSelect">Selecciona tu nombre</label><select id="employeePinSelect"></select></div><div class="field"><label for="employeePin">PIN</label><input id="employeePin" type="password" placeholder="Ingresa tu PIN"></div><button class="btn btn-primary" id="employeeLoginBtn" type="button">Entrar a mi servicio</button></div></div>
       </div>
     </section>
